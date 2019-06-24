@@ -7,7 +7,6 @@ package winhttp
 
 import (
 	"golang.org/x/sys/windows"
-	"strings"
 	"unicode/utf16"
 	"unsafe"
 )
