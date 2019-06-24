@@ -136,10 +136,8 @@ Returns:
 */
 func (p *providerDarwin) readDarwinNetworkSettingProxy(protocol string, targetUrl *url.URL) Proxy {
 	proxy, err := p.parseScutildata(protocol, targetUrl, scUtilBinary, scUtilBinaryArgument)
-	if err != nil {
-		if isNotFound(err) {
-			log.Printf("[proxy.Provider.readDarwinNetworkSettingProxy]: %s proxy is not enabled.\n", protocol)
-		} else if isTimedOut(err) {
+	if err != nil && !isNotFound(err){
+		if isTimedOut(err) {
 			log.Printf("[proxy.Provider.readDarwinNetworkSettingProxy]: Operation timed out. \n")
 		} else {
 			log.Printf("[proxy.Provider.readDarwinNetworkSettingProxy]: Failed to parse Scutil data, %s\n", err)
