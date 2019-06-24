@@ -13,7 +13,7 @@
 package proxy
 
 import (
-	"github.com/rapid7/go-get-proxied/winhttp"
+	"github.com/kiteco/go-get-proxied/winhttp"
 	"log"
 	"net/url"
 	"reflect"
@@ -125,39 +125,29 @@ type providerWindows struct {
 func (p *providerWindows) readWinHttpProxy(protocol string, targetUrl *url.URL) Proxy {
 	// Internet Options
 	ieProxyConfig, err := p.getIeProxyConfigCurrentUser()
-	if err != nil {
-		log.Printf("[proxy.Provider.readWinHttpProxy] Failed to read IE proxy config: %s\n", err)
-	} else {
+	if err == nil {
 		defer p.freeWinHttpResource(ieProxyConfig)
 		if ieProxyConfig.FAutoDetect {
 			proxy, err := p.getProxyAutoDetect(protocol, targetUrl)
 			if err == nil {
 				return proxy
-			} else if !isNotFound(err) {
-				log.Printf("[proxy.Provider.readWinHttpProxy] No proxy discovered via AutoDetect: %s\n", err)
 			}
 		}
 		if autoConfigUrl := winhttp.LpwstrToString(ieProxyConfig.LpszAutoConfigUrl); autoConfigUrl != "" {
 			proxy, err := p.getProxyAutoConfigUrl(protocol, targetUrl, autoConfigUrl)
 			if err == nil {
 				return proxy
-			} else if !isNotFound(err) {
-				log.Printf("[proxy.Provider.readWinHttpProxy] No proxy discovered via AutoConfigUrl, %s: %s\n", autoConfigUrl, err)
 			}
 		}
 		proxy, err := p.parseProxyInfo(srcNamedProxy, protocol, targetUrl, ieProxyConfig.LpszProxy, ieProxyConfig.LpszProxyBypass)
 		if err == nil {
 			return proxy
-		} else if !isNotFound(err) {
-			log.Printf("[proxy.Provider.readWinHttpProxy] Failed to parse named proxy: %s\n", err)
 		}
 	}
 	// netsh winhttp
 	proxy, err := p.getProxyWinHttpDefault(protocol, targetUrl)
 	if err == nil {
 		return proxy
-	} else if !isNotFound(err) {
-		log.Printf("[proxy.Provider.readWinHttpProxy] Failed to parse WinHttp default proxy info: %s\n", err)
 	}
 	return nil
 }

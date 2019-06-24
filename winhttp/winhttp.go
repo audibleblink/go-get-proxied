@@ -7,6 +7,7 @@ package winhttp
 
 import (
 	"golang.org/x/sys/windows"
+	"strings"
 	"unicode/utf16"
 	"unsafe"
 )
@@ -217,6 +218,14 @@ func GetProxyForUrl(hInternet HInternet, lpcwszUrl Lpwstr, pAutoProxyOptions *Au
 		uintptr(unsafe.Pointer(p)))
 	if rTrue(r) {
 		return p, nil
+	}
+
+	// 12167, documentated at https://docs.microsoft.com/en-us/windows/desktop/winhttp/error-messages
+	// The PAC file cannot be downloaded. For example, the server referenced by the PAC URL may not have been reachable,
+	// or the server returned a 404 NOT FOUND response.
+	// in this case we're not returning an error
+	if err != nil && strings.Contains(err.Error(), "winapi error #12167") {
+		return nil, nil
 	}
 	return nil, err
 }
