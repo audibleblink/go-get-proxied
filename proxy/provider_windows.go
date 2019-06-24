@@ -273,6 +273,14 @@ func (p *providerWindows) getProxyInfoForUrl(targetUrl *url.URL, autoProxyOption
 	}
 	proxyInfo, err := winhttp.GetProxyForUrl(h, winhttp.StringToLpwstr(targetUrl.String()), autoProxyOptions)
 	if err != nil {
+		if strings.Contains(err.Error(), "winapi error #12167") {
+			// 12167, documented at https://docs.microsoft.com/en-us/windows/desktop/winhttp/error-messages
+			// The PAC file cannot be downloaded. For example, the server referenced by the PAC URL may not have been reachable,
+			// or the server returned a 404 NOT FOUND response.
+			// in this case we're not returning an error
+
+			return nil, notFoundError{}
+		}
 		return nil, err
 	}
 	return proxyInfo, nil
