@@ -255,7 +255,7 @@ func (p *providerDarwin) parseScutildata(protocol string, targetUrl *url.URL, na
 	}
 	if proxyBypass != "" {
 		bypass := p.isProxyBypass(targetUrl, proxyBypass, ",")
-		log.Printf("[proxy.Provider.parseProxyInfo]: ProxyBypass=\"%s\", targetUrl=%s, bypass=%t", proxyBypass, targetUrl, bypass)
+		// log.Printf("[proxy.Provider.parseProxyInfo]: ProxyBypass=\"%s\", targetUrl=%s, bypass=%t", proxyBypass, targetUrl, bypass)
 		if bypass {
 			return nil, nil
 		}
