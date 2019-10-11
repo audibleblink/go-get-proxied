@@ -13,7 +13,7 @@
 package proxy
 
 import (
-	"github.com/kiteco/go-get-proxied/winhttp"
+	"github.com/audibleblink/go-get-proxied/winhttp"
 	"log"
 	"net/url"
 	"reflect"
